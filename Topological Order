@@ -1,0 +1,45 @@
+#include<stdio.h>
+int Q[10],rear=0;
+void TopologicalSort(int a[][],int InDeg[],int n)
+{
+int i,j;
+for(i=1;i<=n;i++)
+{
+if(InDeg[i]==0)
+{
+InDeg[i]=-1;
+Q[++rear]=i;
+for(j=1;j<=n;j++)
+{
+if(a[i][j]==1 && InDeg[j]!=-1)
+InDeg[j]--;
+}
+i=0;
+}
+}
+}
+void main()
+{
+int a[10][10],InDeg[10],n,i,j;
+printf("\nEnterthe number of nodes in a Graph:");
+scanf("%d",&n);
+for(i=1;i<=n;i++)
+InDeg[i]=0;
+printf("\nEnterthe graph data in Adjacency Matrix representation:\n");
+for(i=1;i<=n;i++)
+for(j=1;j<=n;j++)
+{
+scanf("%d",&a[i][j]);
+if(a[i][j]==1)
+InDeg[j]++;
+}
+TopologicalSort(a,InDeg,n);
+if(rear!=n)
+printf("\nTopological ordering not possible");
+else
+{
+printf("\nTopological ordering is:");
+for(i=1;i<=rear;i++)
+printf("%d \t",Q[i]);
+}
+}
