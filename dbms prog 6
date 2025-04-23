@@ -1,0 +1,63 @@
+CREATE DATABASE IF NOT EXISTS assi8;
+USE assi8;
+
+SHOW TABLES;
+
+CREATE TABLE IF NOT EXISTS old_roll (
+    roll INT,
+    name VARCHAR(10)
+);
+
+CREATE TABLE IF NOT EXISTS new_roll (
+    roll INT,
+    name VARCHAR(10)
+);
+
+INSERT INTO old_roll VALUES (4, 'd');
+INSERT INTO old_roll VALUES (3, 'bcd');
+INSERT INTO old_roll VALUES (1, 'bc');
+INSERT INTO old_roll VALUES (5, 'bch');
+
+INSERT INTO new_roll VALUES (2, 'b');
+INSERT INTO new_roll VALUES (5, 'bch');
+INSERT INTO new_roll VALUES (1, 'bc');
+
+SELECT * FROM old_roll;
+SELECT * FROM new_roll;
+
+DELIMITER $$
+
+CREATE PROCEDURE merge_rolls()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_roll INT;
+    DECLARE v_name VARCHAR(10);
+
+    DECLARE cur CURSOR FOR
+        SELECT roll, name FROM old_roll;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO v_roll, v_name;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        IF NOT EXISTS (
+            SELECT 1 FROM new_roll WHERE roll = v_roll AND name = v_name
+        ) THEN
+            INSERT INTO new_roll (roll, name) VALUES (v_roll, v_name);
+        END IF;
+    END LOOP;
+
+    CLOSE cur;
+END $$
+
+DELIMITER ;
+
+CALL merge_rolls();
+
+SELECT * FROM new_roll;
