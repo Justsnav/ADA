@@ -1,0 +1,40 @@
+-- Create table
+CREATE TABLE CUSTOMERS2 (
+    ID INT,
+    NAME VARCHAR(50),
+    AGE INT,
+    ADDRESS VARCHAR(100),
+    SALARY DECIMAL(10,2)
+);
+
+-- Insert data
+INSERT INTO CUSTOMERS2 VALUES (1, 'Ramesh', 23, 'Allahabad', 20000.00);
+INSERT INTO CUSTOMERS2 VALUES (2, 'Suresh', 22, 'Kanpur', 20000.00);
+INSERT INTO CUSTOMERS2 VALUES (3, 'Mahesh', 24, 'Ghaziabad', 24000.00);
+INSERT INTO CUSTOMERS2 VALUES (4, 'Naresh', 25, 'Noida', 25000.00);
+INSERT INTO CUSTOMERS2 VALUES (5, 'Alex', 21, 'Pune', 28000.00);
+INSERT INTO CUSTOMERS2 VALUES (6, 'Sunita', 20, 'Delhi', 30000.00);
+
+-- Check data
+SELECT * FROM CUSTOMERS2;
+
+-- Create the trigger
+DELIMITER //
+
+CREATE TRIGGER display_salary_changes
+AFTER INSERT OR UPDATE OR DELETE ON CUSTOMERS2
+FOR EACH ROW
+BEGIN
+    DECLARE old_sal DECIMAL(10,2);
+    DECLARE new_sal DECIMAL(10,2);
+    DECLARE sal_diff DECIMAL(10,2);
+
+    SET old_sal = IFNULL(OLD.salary, 0);
+    SET new_sal = IFNULL(NEW.salary, 0);
+    SET sal_diff = new_sal - old_sal;
+
+    SELECT old_sal AS Old_Salary, new_sal AS New_Salary, sal_diff AS Difference;
+END;
+//
+
+DELIMITER ;
