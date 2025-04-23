@@ -1,0 +1,50 @@
+-- Create table
+CREATE TABLE employees (
+    employee_id INTEGER,
+    first_name VARCHAR(25),
+    last_name VARCHAR(25),
+    email VARCHAR(25),
+    phone_number VARCHAR(15),
+    hire_date DATE,
+    job_id VARCHAR(25),
+    salary INTEGER,
+    commission_pct DECIMAL(5,2),
+    manager_id INTEGER,
+    department_id INTEGER
+);
+
+-- Insert data
+INSERT INTO employees (employee_id, first_name, last_name, email, phone_number, hire_date, job_id, salary, commission_pct, manager_id, department_id)
+VALUES
+(1, 'John', 'Doe', 'john.doe@example.com', '1234567890', TO_DATE('2022-01-01','YYYY-MM-DD'), 'IT_PROG', 5000, 0.05, NULL, 10);
+
+INSERT INTO employees (employee_id, first_name, last_name, email, phone_number, hire_date, job_id, salary, commission_pct, manager_id, department_id)
+VALUES
+(2, 'Jane', 'Smith', 'jane.smith@example.com', '9876543210', TO_DATE('2022-02-01','YYYY-MM-DD'), 'HR_REP', 6000, 0.03, 1, 20);
+
+-- Enable output
+SET SERVEROUTPUT ON;
+
+-- Cursor block
+DECLARE
+    CURSOR emp_cursor IS
+        SELECT employee_id, first_name, EXTRACT(YEAR FROM SYSDATE) - EXTRACT(YEAR FROM hire_date) AS age, salary
+        FROM employees;
+
+    v_employee_id employees.employee_id%TYPE;
+    v_first_name employees.first_name%TYPE;
+    v_age NUMBER;
+    v_salary employees.salary%TYPE;
+BEGIN
+    OPEN emp_cursor;
+
+    LOOP
+        FETCH emp_cursor INTO v_employee_id, v_first_name, v_age, v_salary;
+        EXIT WHEN emp_cursor%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE('ID: ' || v_employee_id || ', Name: ' || v_first_name || ', Age: ' || v_age || ', Salary: ' || v_salary);
+    END LOOP;
+
+    CLOSE emp_cursor;
+END;
+/
