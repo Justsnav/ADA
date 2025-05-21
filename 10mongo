@@ -1,0 +1,41 @@
+// Step 1: Use the appropriate database
+use CatalogDB
+// Step 2: Insert sample data (if not already inserted)
+db.CatalogData.insertMany([
+ { title: "Node.js Guide", description: "Learn server-side programming with Node.js and
+JavaScript." },
+ { title: "MongoDB Basics", description: "This book introduces MongoDB and NoSQL
+database design." },
+ { title: "Advanced Python", description: "Master advanced concepts in Python for data
+science and web development." },
+ { title: "Java Programming", description: "Comprehensive guide to Java programming for
+beginners." },
+ { title: "Python Data Analysis", description: "Data analysis and visualization with Python and
+Pandas." },
+ { title: "Web Development", description: "Covers HTML, CSS, JavaScript, and modern
+frameworks." }
+])
+// Step 3: Create a text index on relevant fields
+db.CatalogData.createIndex({ title: "text", description: "text" })
+// Step 4: Aggregation pipeline for text search
+db.CatalogData.aggregate([
+ {
+ $match: {
+ $text: {
+ $search: "Python" // keyword to search
+ }
+ }
+ },
+ {
+ $project: {
+ title: 1,
+ description: 1,
+ score: { $meta: "textScore" } // include relevance score
+ }
+ },
+ {
+ $sort: {
+ score: -1 // sort by relevance
+ }
+ }
+]
