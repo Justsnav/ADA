@@ -1,0 +1,33 @@
+// Switch to a new or existing database use CatalogDB
+
+// Create a new collection
+db.createCollection("CatalogData")
+
+
+// Insert sample documents db.CatalogData.insertMany([
+{ title: "Node.js Guide", description: "Learn server-side programming with Node.js and JavaScript." },
+{ title: "MongoDB Basics", description: "This book introduces MongoDB and NoSQL database design." },
+{ title: "Advanced Python", description: "Master advanced concepts in Python for data science and web development." },
+{ title: "Java Programming", description: "Comprehensive guide to Java programming for beginners." },
+{ title: "Python Data Analysis", description: "Data analysis and visualization with Python and Pandas." },
+{ title: "Web Development", description: "Covers HTML, CSS, JavaScript, and modern frameworks." }
+])
+
+
+// Create a text index on title and description fields db.CatalogData.createIndex({ title: "text", description: "text" })
+
+// =========================================
+// a. Demonstrate Text Search for a Given Word
+// =========================================
+// Find documents that match the word "Python" db.CatalogData.find({ $text: { $search: "Python" } })
+ 
+// ==============================================
+// b. Exclude Documents with Certain Words/Phrases
+// ==============================================
+// 1. Exclude documents containing the word "Java" db.CatalogData.find({ $text: { $search: "-Java" } })
+
+// 2. Exclude documents containing the phrase "data science" db.CatalogData.find({ $text: { $search: "-\"data science\"" } })
+
+// 3. Include "Python" but exclude "Pandas" db.CatalogData.find({ $text: { $search: "Python -Pandas" } })
+
+// Optional: View the index created db.CatalogData.getIndexes()
